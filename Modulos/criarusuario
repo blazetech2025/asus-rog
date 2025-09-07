@@ -1,0 +1,565 @@
+#!/bin/bash
+
+# Premium Color Palette for MAPTECH GLOBAL
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+PURPLE='\033[1;35m'
+CYAN='\033[1;36m'
+WHITE='\033[1;37m'
+GRAY='\033[1;90m'
+BOLD='\033[1m'
+RESET='\033[0m'
+DIM='\033[2m'
+
+# Gradient Colors
+NEON_GREEN='\033[38;5;46m'
+NEON_BLUE='\033[38;5;51m'
+NEON_PURPLE='\033[38;5;129m'
+NEON_PINK='\033[38;5;201m'
+ORANGE='\033[38;5;208m'
+LIME='\033[38;5;154m'
+ELECTRIC_BLUE='\033[38;5;33m'
+GOLD='\033[38;5;220m'
+
+# Background Colors & Effects
+BG_RED='\033[41m'
+BG_GREEN='\033[42m'
+BG_BLUE='\033[44m'
+BG_PURPLE='\033[45m'
+BG_CYAN='\033[46m'
+BG_GOLD='\033[48;5;220m'
+BG_DARK='\033[48;5;232m'
+BLINK='\033[5m'
+UNDERLINE='\033[4m'
+
+# Premium Unicode Characters
+LOGO="🌟"
+GLOBE="🌐"
+ROCKET="🚀"
+SHIELD="🛡️"
+GEAR="⚙️"
+DIAMOND="💎"
+STAR="⭐"
+LIGHTNING="⚡"
+CROWN="👑"
+FIRE="🔥"
+ARROW="➤"
+DOUBLE_ARROW="⟫"
+CHECK_MARK="✅"
+CROSS_MARK="❌"
+WARNING="⚠️"
+INFO="ℹ️"
+BULLET="●"
+CIRCLE="○"
+TRIANGLE="▲"
+SQUARE="■"
+HEART="❤️"
+CLOCK="🕐"
+USER_ICON="👤"
+KEY_ICON="🔑"
+CALENDAR="📅"
+CONNECTION="🔗"
+
+IP=$(cat /etc/IP)
+cor1='\033[41;1;37m'
+cor2='\033[44;1;37m'
+scor='\033[0m'
+
+if [[ -f /etc/.domain ]]; then
+    Host=$(cat /etc/.domain)
+else
+    Host="Your_domain_here"
+fi
+
+# Premium Header
+print_header() {
+    clear
+    echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${NEON_PURPLE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL ${ROCKET}${NEON_BLUE} SSH CREATOR ${LIGHTNING}${NEON_GREEN} v2.0 ${CROWN}${RESET}${NEON_PURPLE}            ║${RESET}"
+    echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+}
+
+# Advanced Progress Bar
+fun_bar() {
+    comando[0]="$1"
+    comando[1]="$2"
+    (
+        [[ -e $HOME/fim ]] && rm $HOME/fim
+        ${comando[0]} >/dev/null 2>&1
+        ${comando[1]} >/dev/null 2>&1
+        touch $HOME/fim
+    ) >/dev/null 2>&1 &
+    tput civis
+    echo -ne "${NEON_BLUE}${LIGHTNING} ${WHITE}Processing ${CYAN}["
+    while true; do
+        for((i=0; i<25; i++)); do
+            echo -ne "${NEON_GREEN}█"
+            sleep 0.04s
+        done
+        [[ -e $HOME/fim ]] && rm $HOME/fim && break
+        echo -e "${CYAN}]"
+        sleep 1s
+        tput cuu1
+        tput dl1
+        echo -ne "${NEON_BLUE}${LIGHTNING} ${WHITE}Processing ${CYAN}["
+    done
+    echo -e "${CYAN}] ${NEON_GREEN}${CHECK_MARK} ${WHITE}DONE${RESET}"
+    tput cnorm
+}
+
+# Enhanced Input Function
+get_input() {
+    local prompt="$1"
+    local icon="$2"
+    local color="$3"
+    echo -ne "${color}${icon} ${prompt}${WHITE}: ${NEON_GREEN}"
+    read input
+    echo -e "${RESET}"
+}
+
+# Enhanced Error Display
+show_error() {
+    echo ""
+    echo -e "${RED}${CROSS_MARK} ${WHITE}ERROR: $1${RESET}"
+    echo ""
+    exit 1
+}
+
+# Enhanced Success Display
+show_success() {
+    echo ""
+    echo -e "${NEON_GREEN}${CHECK_MARK} ${WHITE}SUCCESS: $1${RESET}"
+    echo ""
+}
+
+# Gerar client.ovpn
+newclient() {
+    cp /etc/openvpn/client-common.txt ~/$1.ovpn
+    echo "<ca>" >>~/$1.ovpn
+    cat /etc/openvpn/easy-rsa/pki/ca.crt >>~/$1.ovpn
+    echo "</ca>" >>~/$1.ovpn
+    echo "<cert>" >>~/$1.ovpn
+    cat /etc/openvpn/easy-rsa/pki/issued/$1.crt >>~/$1.ovpn
+    echo "</cert>" >>~/$1.ovpn
+    echo "<key>" >>~/$1.ovpn
+    cat /etc/openvpn/easy-rsa/pki/private/$1.key >>~/$1.ovpn
+    echo "</key>" >>~/$1.ovpn
+    echo "<tls-auth>" >>~/$1.ovpn
+    cat /etc/openvpn/ta.key >>~/$1.ovpn
+    echo "</tls-auth>" >>~/$1.ovpn
+}
+
+fun_geraovpn() {
+    [[ "$respost" = @(s|S) ]] && {
+        cd /etc/openvpn/easy-rsa/
+        ./easyrsa build-client-full $username nopass
+        newclient "$username"
+        sed -e "s;auth-user-pass;<auth-user-pass>\n$username\n$password\n</auth-user-pass>;g" /root/$username.ovpn >/root/tmp.ovpn && mv -f /root/tmp.ovpn /root/$username.ovpn
+    } || {
+        cd /etc/openvpn/easy-rsa/
+        ./easyrsa build-client-full $username nopass
+        newclient "$username"
+    }
+} >/dev/null 2>&1
+
+[[ -e /etc/openvpn/server.conf ]] && {
+    _Port=$(grep -w 'port' /etc/openvpn/server.conf | awk {'print $2'})
+    hst=$(sed -n '8 p' /etc/openvpn/client-common.txt | awk {'print $4'})
+    rmt=$(sed -n '7 p' /etc/openvpn/client-common.txt)
+    hedr=$(sed -n '8 p' /etc/openvpn/client-common.txt)
+    prxy=$(sed -n '9 p' /etc/openvpn/client-common.txt)
+    rmt2='/VPSMANAGER?'
+    rmt3='www.vivo.com.br 8088'
+    prx='200.142.130.104'
+    payload1='#payload "HTTP/1.0 [crlf]Host: m.youtube.com[crlf]CONNECT HTTP/1.0[crlf][crlf]|[crlf]"'
+    payload2='#payload "CONNECT 127.0.0.1:1194[split][crlf] HTTP/1.0 [crlf][crlf]#"'
+    vivo1="portalrecarga.vivo.com.br/recarga"
+    vivo2="portalrecarga.vivo.com.br/controle/"
+    vivo3="navegue.vivo.com.br/pre/"
+    vivo4="navegue.vivo.com.br/controle/"
+    vivo5="www.vivo.com.br"
+    oi="d1n212ccp6ldpw.cloudfront.net"
+    bypass="net_gateway"
+    cert01="/etc/openvpn/client-common.txt"
+    if [[ "$hst" == "$vivo1" ]]; then
+        Host="Portal Recarga"
+    elif [[ "$hst" == "$vivo2" ]]; then
+        Host="Recarga contole"
+    elif [[ "$hst" == "$vivo3" ]]; then
+        Host="Portal Navegue"
+    elif [[ "$hst" == "$vivo4" ]]; then
+        Host="Nav controle"
+    elif [[ "$hst" == "$IP:$_Port" ]]; then
+        Host="Vivo MMS"
+    elif [[ "$hst" == "$oi" ]]; then
+        Host="Oi"
+    elif [[ "$hst" == "$bypass" ]]; then
+        Host="Modo Bypass"
+    elif [[ "$hedr" == "$payload1" ]]; then
+        Host="OPEN SOCKS"
+    elif [[ "$hedr" == "$payload2" ]]; then
+        Host="OPEN SQUID"
+    else
+        Host="$Host"
+    fi
+}
+
+fun_edithost() {
+    clear
+    echo -e "${NEON_PURPLE}╔═══════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${NEON_PURPLE}║${BG_BLUE}${WHITE}              ${GEAR} CHANGE HOST OVPN ${GEAR}               ${RESET}${NEON_PURPLE}║${RESET}"
+    echo -e "${NEON_PURPLE}╚═══════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${GOLD}${GLOBE} ${WHITE}HOST IN USE${WHITE}: ${NEON_GREEN}$Host${RESET}"
+    echo ""
+    echo -e "${ELECTRIC_BLUE}┌─────────────────────────────────────────────────────┐${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}1${WHITE} ${ARROW} VIVO RECHARGE                              ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}2${WHITE} ${ARROW} VIVO NAVIGATE PRE                          ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}3${WHITE} ${ARROW} OPEN SOCKS ${RED}[${NEON_GREEN}APP MOD${RED}]                     ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}4${WHITE} ${ARROW} OPEN SQUID ${RED}[${NEON_GREEN}APP MOD${RED}]                     ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}5${WHITE} ${ARROW} VIVO MMS ${RED}[${WHITE}APN: ${NEON_GREEN}mms.vivo.com.br${RED}]        ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}6${WHITE} ${ARROW} MODO BYPASS ${RED}[${NEON_GREEN}OPEN + INJECTOR${RED}]            ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}7${WHITE} ${ARROW} ALL HOSTS ${RED}[${NEON_GREEN}1 OVPN OF EACH${RED}]              ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}8${WHITE} ${ARROW} EDIT MANUALLY                              ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}0${WHITE} ${ARROW} ${RED}COME BACK                                   ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}└─────────────────────────────────────────────────────┘${RESET}"
+    echo ""
+    echo -ne "${NEON_GREEN}${GEAR} ${WHITE}WHICH HOST DO YOU WANT TO USE ${GOLD}? ${NEON_GREEN}"
+    read respo
+    [[ -z "$respo" ]] && {
+        show_error "Invalid option!"
+        sleep 2
+        fun_edithost
+    }
+    if [[ "$respo" = '1' ]]; then
+        echo -e "\n${NEON_GREEN}${ROCKET} ${WHITE}CHANGING HOST!${RESET}\n"
+        fun_althost() {
+        	sed -i "7,9"d $cert01
+        	sleep 1
+        	sed -i "7i\remote $rmt2 $_Port\nhttp-proxy-option CUSTOM-HEADER Host $vivo1\nhttp-proxy $IP 80" $cert01
+        }
+        fun_bar 'fun_althost'
+        show_success "HOST SUCCESSFULLY CHANGED!"
+        fun_geraovpn
+        sleep 1.5
+    elif [[ "$respo" = '2' ]]; then
+        echo -e "\n${NEON_GREEN}${ROCKET} ${WHITE}CHANGING HOST!${RESET}\n"
+        fun_althost2() {
+            sed -i "7,9"d $cert01
+        	sleep 1
+        	sed -i "7i\remote $rmt2 $_Port\nhttp-proxy-option CUSTOM-HEADER Host $vivo3\nhttp-proxy $IP 80" $cert01
+        }
+        fun_bar 'fun_althost2'
+        show_success "HOST SUCCESSFULLY CHANGED!"
+        fun_geraovpn
+        sleep 1.5
+    elif [[ "$respo" = '3' ]]; then
+        echo -e "\n${NEON_GREEN}${ROCKET} ${WHITE}CHANGING HOST!${RESET}\n"
+        fun_althostpay1() {
+        	sed -i "7,9"d $cert01
+        	sleep 1
+        	sed -i "7i\remote $rmt2 $_Port\n$payload1\nhttp-proxy $IP 8080" $cert01
+        }
+        fun_bar 'fun_althostpay1'
+        show_success "HOST SUCCESSFULLY CHANGED!"
+        fun_geraovpn
+        sleep 1.5
+    elif [[ "$respo" = '4' ]]; then
+        echo -e "\n${NEON_GREEN}${ROCKET} ${WHITE}CHANGING HOST!${RESET}\n"
+        fun_althostpay2() {
+            sed -i "7,9"d $cert01
+        	sleep 1
+        	sed -i "7i\remote $rmt2 $_Port\n$payload2\nhttp-proxy $IP 80" $cert01
+        }
+        fun_bar 'fun_althostpay2'
+        show_success "HOST SUCCESSFULLY CHANGED!"
+        fun_geraovpn
+        sleep 1.5
+    elif [[ "$respo" = '5' ]]; then
+        echo -e "\n${NEON_GREEN}${ROCKET} ${WHITE}CHANGING HOST!${RESET}\n"
+        fun_althost5() {
+        	sed -i "7,9"d $cert01
+        	sleep 1
+        	sed -i "7i\remote $rmt3\nhttp-proxy-option CUSTOM-HEADER Host $vivo3\nhttp-proxy $prx:$_Port" $cert01
+        }
+        fun_bar 'fun_althost5'
+        show_success "HOST SUCCESSFULLY CHANGED!"
+        fun_geraovpn
+        sleep 1.5
+    elif [[ "$respo" = '6' ]]; then
+        echo -e "\n${NEON_GREEN}${ROCKET} ${WHITE}CHANGING HOST!${RESET}\n"
+        fun_althost6() {
+        	sed -i "7,9"d $cert01
+        	sleep 1
+        	sed -i "7i\remote $IP $_Port\nroute $IP 255.255.255.255 net_gateway\nhttp-proxy 127.0.0.1 8989" $cert01
+        }
+        fun_bar 'fun_althost6'
+        show_success "HOST SUCCESSFULLY CHANGED!"
+        fun_geraovpn
+        sleep 1.5
+    elif [[ "$respo" = '7' ]]; then
+        [[ ! -e "$HOME/$username.ovpn" ]] && fun_geraovpn
+        echo -e "\n${NEON_GREEN}${ROCKET} ${WHITE}CHANGING HOST!${RESET}\n"
+        fun_packhost() {
+            [[ ! -d "$HOME/OVPN" ]] && mkdir $HOME/OVPN
+            sed -i "7,9"d $HOME/$username.ovpn
+            sleep 0.5
+            sed -i "7i\remote $rmt2 $_Port\nhttp-proxy-option CUSTOM-HEADER Host $vivo1\nhttp-proxy $IP 80" $HOME/$username.ovpn
+            cp $HOME/$username.ovpn /root/OVPN/$username-vivo1.ovpn
+            sed -i "8"d $HOME/$username.ovpn
+            sleep 0.5
+            sed -i "8i\http-proxy-option CUSTOM-HEADER Host $vivo3" $HOME/$username.ovpn
+            cp $HOME/$username.ovpn /root/OVPN/$username-vivo2.ovpn
+            sed -i "7,9"d $HOME/$username.ovpn
+            sleep 0.5
+            sed -i "7i\remote $rmt3\nhttp-proxy-option CUSTOM-HEADER Host $IP:$_Port\nhttp-proxy $prx 80" $HOME/$username.ovpn
+            cp $HOME/$username.ovpn /root/OVPN/$username-vivo3.ovpn
+            sed -i "7,9"d $HOME/$username.ovpn
+            sleep 0.5
+            sed -i "7i\remote $IP $_Port\nroute $IP 255.255.255.255 net_gateway\nhttp-proxy 127.0.0.1 8989" $HOME/$username.ovpn
+            cp $HOME/$username.ovpn /root/OVPN/$username-bypass.ovpn
+			sed -i "7,9"d $HOME/$username.ovpn
+			sleep 0.5
+			sed -i "7i\remote $rmt2 $_Port\n$payload1\nhttp-proxy $IP 8080" $HOME/$username.ovpn
+            cp $HOME/$username.ovpn /root/OVPN/$username-socks.ovpn
+			sed -i "7,9"d $HOME/$username.ovpn
+			sleep 0.5
+			sed -i "7i\remote $rmt2 $_Port\n$payload2\nhttp-proxy $IP 80" $HOME/$username.ovpn
+            cp $HOME/$username.ovpn /root/OVPN/$username-squid.ovpn
+            cd $HOME/OVPN && zip $username.zip *.ovpn >/dev/null 2>&1 && cp $username.zip $HOME/$username.zip
+            cd $HOME && rm -rf /root/OVPN >/dev/null 2>&1
+        }
+        fun_bar 'fun_packhost'
+        show_success "HOST SUCCESSFULLY CHANGED!"
+        sleep 1.5
+    elif [[ "$respo" = '8' ]]; then
+        echo ""
+        echo -e "${NEON_GREEN}${GEAR} ${WHITE}CHANGING OVPN FILE!${RESET}"
+        echo ""
+        echo -e "${RED}${WARNING} ${WHITE}ATTENTION!${RESET}"
+        echo ""
+        echo -e "${GOLD}${INFO} ${WHITE}TO SAVE USE KEYS ${NEON_GREEN}ctrl x y${RESET}"
+        sleep 4
+        clear
+        nano /etc/openvpn/client-common.txt
+        echo ""
+        show_success "SUCCESSFULLY CHANGED!"
+        fun_geraovpn
+        sleep 1.5
+    elif [[ "$respo" = '0' ]]; then
+        echo ""
+        echo -e "${RED}${ARROW} ${WHITE}returning...${RESET}"
+        sleep 2
+    else
+        show_error "Invalid option!"
+        sleep 2
+        fun_edithost
+    fi
+}
+
+# Enhanced User Creation Display
+display_account_info() {
+    local account_type="$1"
+    clear
+    echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${NEON_PURPLE}║${BG_GREEN}${WHITE}             ${CROWN} MAPTECH SSH ACCOUNT ${CROWN}              ${RESET}${NEON_PURPLE}║${RESET}"
+    echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${WHITE}                    ${SHIELD} SSH ACCOUNT ${SHIELD}                     ${ELECTRIC_BLUE}║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${ELECTRIC_BLUE}┌────────────────────┬───────────────────────────────────┐${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${NEON_GREEN}${GLOBE} IP Address        ${ELECTRIC_BLUE}│${WHITE} $IP                        ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}${ROCKET} Host Name         ${ELECTRIC_BLUE}│${WHITE} $Host                      ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${NEON_BLUE}${USER_ICON} Username          ${ELECTRIC_BLUE}│${WHITE} $username                  ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${NEON_PINK}${KEY_ICON} Password          ${ELECTRIC_BLUE}│${WHITE} $password                  ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${ORANGE}${CONNECTION} Login Limit       ${ELECTRIC_BLUE}│${WHITE} $sshlimiter                ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${LIME}${CALENDAR} Expire Date       ${ELECTRIC_BLUE}│${WHITE} $gui                       ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}└────────────────────┴───────────────────────────────────┘${RESET}"
+    
+    if [[ "$account_type" == "ovpn" ]]; then
+        echo ""
+        echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${NEON_PURPLE}║${WHITE}                   ${DIAMOND} PAYLOADS ${DIAMOND}                      ${NEON_PURPLE}║${RESET}"
+        echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}MTN GHANA PAYLOAD 1:${RESET}"
+        echo -e "${NEON_GREEN}GET / HTTP/1.1[crlf]Host: [rotate=www.upsa.edu.gh;mtngh-uat-cd-otycvewgw0hqf68y.edge.mtn-dev.auth0.com][crlf][crlf]- / HTTP/1.1[crlf]Host: $Host[crlf]Upgrade: HTTP/2.0, SHTTP/1.3, IRC/6.9, RTA/x11[crlf]Connection:keep-alive[crlf][crlf]${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}MTN GHANA PAYLOAD 2:${RESET}"
+        echo -e "${NEON_GREEN}GET / HTTP/1.1[crlf]Host:$Host[crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}MTN GHANA PAYLOAD 3:${RESET}"
+        echo -e "${NEON_GREEN}GET ws://[rotate=auth.mtn.com.gh;uhas.edu.gh] HTTP/1.1[crlf]Host: auth.ayo4u.com[crlf]Upgrade: websocket[crlf][crlf]-_- ws://$Host HTTP/1.1[crlf]Host: auth.ayo4u.com[crlf]Upgrade: websocket[crlf][crlf]${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}TELECEL GHANA PAYLOAD:${RESET}"
+        echo -e "${NEON_GREEN}GET http://91.241.94.160/ HTTP/1.1[crlf]Host: zerod.mobi[crlf]Connection: Upgrade[crlf]Upgrade: Websocket [crlf][crlf]${RESET}"
+    else
+        echo ""
+        echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${NEON_PURPLE}║${WHITE}                   ${DIAMOND} PAYLOADS ${DIAMOND}                      ${NEON_PURPLE}║${RESET}"
+        echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}MTN GHANA PAYLOAD:${RESET}"
+        echo -e "${NEON_GREEN}GET / HTTP/1.1[crlf]Host: [rotate=www.upsa.edu.gh;mtngh-uat-cd-otycvewgw0hqf68y.edge.mtn-dev.auth0.com][crlf][crlf]- / HTTP/1.1[crlf]Host: $Host[crlf]Upgrade: HTTP/2.0, SHTTP/1.3, IRC/6.9, RTA/x11[crlf]Connection:keep-alive[crlf][crlf]${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}MTN GHANA PAYLOAD 2:${RESET}"
+        echo -e "${NEON_GREEN}GET / HTTP/1.1[crlf]Host:$Host[crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}MTN GHANA PAYLOAD 3:${RESET}"
+        echo -e "${NEON_GREEN}GET ws://[rotate=auth.mtn.com.gh;uhas.edu.gh] HTTP/1.1[crlf]Host: auth.ayo4u.com[crlf]Upgrade: websocket[crlf][crlf]-_- ws://$Host HTTP/1.1[crlf]Host: auth.ayo4u.com[crlf]Upgrade: websocket[crlf][crlf]${RESET}"
+        echo ""
+        echo -e "${GOLD}${FIRE} ${WHITE}TELECEL GHANA PAYLOAD:${RESET}"
+        echo -e "${NEON_GREEN}GET http://91.241.94.160/ HTTP/1.1[crlf]Host: zerod.mobi[crlf]Connection: Upgrade[crlf]Upgrade: Websocket [crlf][crlf]${RESET}"
+    fi
+    
+    echo ""
+    echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL ${WHITE}© 2025 ${NEON_BLUE}  | ${INFO} @maptechgh ${HEART}${RESET}${ELECTRIC_BLUE}          ║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════╝${RESET}"
+}
+
+# Main Script Execution
+[[ ! -e /usr/lib/vpsmanager ]] && exit 0
+
+print_header
+
+echo -e "${NEON_PURPLE}╔═══════════════════════════════════════════════════════╗${RESET}"
+echo -e "${NEON_PURPLE}║${BG_BLUE}${WHITE}                ${USER_ICON} CREATE SSH USER ${USER_ICON}                ${RESET}${NEON_PURPLE}║${RESET}"
+echo -e "${NEON_PURPLE}╚═══════════════════════════════════════════════════════╝${RESET}"
+echo ""
+
+# Get Username
+get_input "Username" "${USER_ICON}" "${NEON_BLUE}"
+username="$input"
+[[ -z $username ]] && show_error "Empty or invalid username!"
+
+[[ "$(grep -wc $username /etc/passwd)" != '0' ]] && show_error "This user already exists. try another name!"
+
+[[ ${username} != ?(+|-)+([a-zA-Z0-9]) ]] && {
+    echo -e "\n${RED}${CROSS_MARK} ${WHITE}You entered an invalid username!${RESET}"
+    echo -e "${RED}${WARNING} ${WHITE}Do not use spaces, accents or special characters!${RESET}\n"
+    exit 1
+}
+
+sizemin=$(echo ${#username})
+[[ $sizemin -lt 2 ]] && {
+    echo -e "\n${RED}${CROSS_MARK} ${WHITE}You entered too short a username${RESET}"
+    echo -e "${RED}${WARNING} ${WHITE}use at least 4 characters!${RESET}\n"
+    exit 1
+}
+
+sizemax=$(echo ${#username})
+[[ $sizemax -gt 10 ]] && {
+    echo -e "\n${RED}${CROSS_MARK} ${WHITE}You entered a very large username${RESET}"
+    echo -e "${RED}${WARNING} ${WHITE}use a maximum of 10 characters!${RESET}\n"
+    exit 1
+}
+
+# Get Password
+get_input "Password" "${KEY_ICON}" "${NEON_PINK}"
+password="$input"
+[[ -z $password ]] && show_error "Empty or invalid password!"
+
+sizepass=$(echo ${#password})
+[[ $sizepass -lt 4 ]] && show_error "Short password!, use at least 4 characters"
+
+# Get Days
+get_input "Days to expire" "${CALENDAR}" "${LIME}"
+dias="$input"
+[[ -z $dias ]] && show_error "number of days empty!"
+
+[[ ${dias} != ?(+|-)+([0-9]) ]] && show_error "You entered an invalid number of days!"
+
+[[ $dias -lt 1 ]] && show_error "The number must be greater than zero!"
+
+# Get Connection Limit
+get_input "Limit of connections" "${CONNECTION}" "${ORANGE}"
+sshlimiter="$input"
+[[ -z $sshlimiter ]] && show_error "You left the connection limit empty!"
+
+[[ ${sshlimiter} != ?(+|-)+([0-9]) ]] && show_error "You entered an invalid number of connections!"
+
+[[ $sshlimiter -lt 1 ]] && show_error "Number of concurrent connections must be greater than zero!"
+
+# Process User Creation
+echo ""
+echo -e "${NEON_BLUE}${ROCKET} ${WHITE}Creating SSH User...${RESET}"
+echo ""
+
+final=$(date "+%Y-%m-%d" -d "+$dias days")
+gui=$(date "+%d/%m/%Y" -d "+$dias days")
+pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
+
+create_user() {
+    useradd -e $final -M -s /bin/false -p $pass $username >/dev/null 2>&1
+    echo "$password" >/etc/VPSManager/senha/$username
+    echo "$username $sshlimiter" >>/root/usuarios.db
+}
+
+fun_bar 'create_user'
+
+[[ -e /etc/openvpn/server.conf ]] && {
+    echo ""
+    echo -ne "${NEON_GREEN}${ROCKET} ${WHITE}Generate Ovpn File ${RED}? ${GOLD}[s/n]: ${NEON_GREEN}"
+    read resp
+    [[ "$resp" = @(s|S) ]] && {
+        rm $username.zip $username.ovpn >/dev/null 2>&1
+        echo -ne "${NEON_GREEN}${KEY_ICON} ${WHITE}Generate With Username and Password ${RED}? ${GOLD}[s/n]: ${NEON_GREEN}"
+        read respost
+        echo -ne "${GOLD}${GLOBE} ${WHITE}current host: ${RED}(${WHITE}$Host${RED}) ${WHITE}- ${NEON_GREEN}Change ${RED}? ${GOLD}[s/n]: ${NEON_GREEN}"
+        read oprc
+        [[ "$oprc" = @(s|S) ]] && {
+            fun_edithost
+        } || {
+            fun_geraovpn
+        }
+        gerarovpn() {
+            [[ ! -e "/root/$username.zip" ]] && {
+                zip /root/$username.zip /root/$username.ovpn
+                sleep 1.5
+            }
+        }
+        display_account_info "ovpn"
+        sleep 1
+        function aguarde() {
+            helice() {
+                gerarovpn >/dev/null 2>&1 &
+                tput civis
+                while [ -d /proc/$! ]; do
+                    for i in / - \\ \|; do
+                        sleep .1
+                        echo -ne "\e[1D$i"
+                    done
+                done
+                tput cnorm
+            }
+            echo ""
+            echo -ne "${NEON_BLUE}${GEAR} ${WHITE}CREATING OVPN...${GOLD}. ${NEON_GREEN}"
+            helice
+            echo -e "\e[1D${CHECK_MARK} ${WHITE}OK${RESET}"
+        }
+        aguarde
+        VERSION_ID=$(cat /etc/os-release | grep "VERSION_ID")
+        echo ""
+        [[ -d /var/www/html/openvpn ]] && {
+            mv $HOME/$username.zip /var/www/html/openvpn/$username.zip >/dev/null 2>&1
+            [[ "$VERSION_ID" = 'VERSION_ID="14.04"' ]] && {
+                echo -e "${NEON_GREEN}${GLOBE} ${WHITE}LINK: ${NEON_BLUE}$IP:81/html/openvpn/$username.zip${RESET}"
+            } || {
+                echo -e "${NEON_GREEN}${GLOBE} ${WHITE}LINK: ${NEON_BLUE}$IP:81/openvpn/$username.zip${RESET}"
+            }
+        } || {
+            echo -e "${NEON_GREEN}${DIAMOND} ${WHITE}Available in ${NEON_BLUE}~/$username.zip${RESET}"
+            sleep 1
+        }
+    } || {
+        display_account_info "basic"
+    }
+} || {
+    display_account_info "basic"
+}

@@ -1,0 +1,286 @@
+#!/bin/bash
+
+# Premium Color Palette for MAPTECH GLOBAL
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+PURPLE='\033[1;35m'
+CYAN='\033[1;36m'
+WHITE='\033[1;37m'
+GRAY='\033[1;90m'
+BOLD='\033[1m'
+RESET='\033[0m'
+DIM='\033[2m'
+
+# Gradient Colors
+NEON_GREEN='\033[38;5;46m'
+NEON_BLUE='\033[38;5;51m'
+NEON_PURPLE='\033[38;5;129m'
+NEON_PINK='\033[38;5;201m'
+ORANGE='\033[38;5;208m'
+LIME='\033[38;5;154m'
+ELECTRIC_BLUE='\033[38;5;33m'
+GOLD='\033[38;5;220m'
+
+# Background Colors & Effects
+BG_RED='\033[41m'
+BG_GREEN='\033[42m'
+BG_BLUE='\033[44m'
+BG_PURPLE='\033[45m'
+BG_CYAN='\033[46m'
+BG_GOLD='\033[48;5;220m'
+BG_DARK='\033[48;5;232m'
+BLINK='\033[5m'
+UNDERLINE='\033[4m'
+
+# Premium Unicode Characters
+LOGO="🌟"
+GLOBE="🌐"
+ROCKET="🚀"
+SHIELD="🛡️"
+GEAR="⚙️"
+DIAMOND="💎"
+STAR="⭐"
+LIGHTNING="⚡"
+CROWN="👑"
+FIRE="🔥"
+ARROW="➤"
+DOUBLE_ARROW="⟫"
+CHECK_MARK="✅"
+CROSS_MARK="❌"
+WARNING="⚠️"
+INFO="ℹ️"
+BULLET="●"
+CIRCLE="○"
+TRIANGLE="▲"
+SQUARE="■"
+HEART="❤️"
+CLOCK="🕐"
+BANNER_ICON="🏷️"
+EDIT_ICON="✏️"
+PALETTE="🎨"
+FONT_ICON="🔤"
+TRASH="🗑️"
+
+# Premium Header
+print_header() {
+    clear
+    echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${NEON_PURPLE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL ${ROCKET}${NEON_BLUE} BANNER MANAGER ${LIGHTNING}${NEON_GREEN} v2.0 ${CROWN}${RESET}${NEON_PURPLE}        ║${RESET}"
+    echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+}
+
+# Enhanced Input Function
+get_input() {
+    local prompt="$1"
+    local icon="$2"
+    local color="$3"
+    echo -ne "${color}${icon} ${prompt}${WHITE}: ${NEON_GREEN}"
+    read input
+    echo -e "${RESET}"
+}
+
+# Enhanced Error Display
+show_error() {
+    echo ""
+    echo -e "${RED}${CROSS_MARK} ${WHITE}ERROR: $1${RESET}"
+    echo ""
+}
+
+# Enhanced Success Display
+show_success() {
+    echo ""
+    echo -e "${NEON_GREEN}${CHECK_MARK} ${WHITE}SUCCESS: $1${RESET}"
+    echo ""
+}
+
+# Manual Instructions Display
+show_manual_instructions() {
+    echo -e "${ELECTRIC_BLUE}╔═══════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${BG_PURPLE}${WHITE}            ${EDIT_ICON} MANUAL BANNER EDITING ${EDIT_ICON}             ${RESET}${ELECTRIC_BLUE}║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚═══════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${NEON_GREEN}${ARROW} ${WHITE}MANUAL BANNER ADDING METHOD${RESET}"
+    echo ""
+    echo -e "${ELECTRIC_BLUE}┌─────────────────────────────────────────────────────┐${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}${INFO} Step 1: ${WHITE}Press ${RED}CTRL+C${WHITE} and send${GOLD} ${ARROW}        ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${NEON_BLUE}   sudo nano /etc/bannerssh                    ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}${INFO} ${WHITE}PASTE YOUR BANNER AS HTML TEXT             ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}${INFO} Step 2: ${WHITE}Press ${NEON_GREEN}CTRL+O${WHITE} enter ${NEON_GREEN}CTRL+X         ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}└─────────────────────────────────────────────────────┘${RESET}"
+    echo ""
+    echo -e "${GOLD}${DIAMOND} ${WHITE}OR${RESET}"
+    echo ""
+}
+
+# Font Size Selection Menu
+show_font_menu() {
+    echo ""
+    echo -e "${ELECTRIC_BLUE}╔═══════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${BG_BLUE}${WHITE}               ${FONT_ICON} FONT SIZE SELECTION ${FONT_ICON}              ${RESET}${ELECTRIC_BLUE}║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚═══════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${NEON_BLUE}┌─────────────────────────────────────────────────────┐${RESET}"
+    echo -e "${NEON_BLUE}│${GOLD}01${WHITE} ${ARROW} SMALL FONT SIZE                        ${NEON_BLUE}│${RESET}"
+    echo -e "${NEON_BLUE}│${GOLD}02${WHITE} ${ARROW} AVERAGE FONT SIZE                      ${NEON_BLUE}│${RESET}"
+    echo -e "${NEON_BLUE}│${GOLD}03${WHITE} ${ARROW} LARGE FONT SIZE                       ${NEON_BLUE}│${RESET}"
+    echo -e "${NEON_BLUE}│${GOLD}04${WHITE} ${ARROW} GIANT FONT SIZE                       ${NEON_BLUE}│${RESET}"
+    echo -e "${NEON_BLUE}└─────────────────────────────────────────────────────┘${RESET}"
+}
+
+# Color Selection Menu
+show_color_menu() {
+    echo ""
+    echo -e "${ELECTRIC_BLUE}╔═══════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${BG_PURPLE}${WHITE}                ${PALETTE} COLOR SELECTION ${PALETTE}                ${RESET}${ELECTRIC_BLUE}║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚═══════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${NEON_PURPLE}┌───────────────────────┬───────────────────────────┐${RESET}"
+    echo -e "${NEON_PURPLE}│${GOLD}01${WHITE} ${ARROW} ${BLUE}BLUE                ${NEON_PURPLE}│${GOLD}06${WHITE} ${ARROW} ${CYAN}CYAN                ${NEON_PURPLE}│${RESET}"
+    echo -e "${NEON_PURPLE}│${GOLD}02${WHITE} ${ARROW} ${GREEN}GREEN               ${NEON_PURPLE}│${GOLD}07${WHITE} ${ARROW} ${ORANGE}ORANGE              ${NEON_PURPLE}│${RESET}"
+    echo -e "${NEON_PURPLE}│${GOLD}03${WHITE} ${ARROW} ${RED}RED                 ${NEON_PURPLE}│${GOLD}08${WHITE} ${ARROW} ${PURPLE}PURPLE              ${NEON_PURPLE}│${RESET}"
+    echo -e "${NEON_PURPLE}│${GOLD}04${WHITE} ${ARROW} ${YELLOW}YELLOW              ${NEON_PURPLE}│${GOLD}09${WHITE} ${ARROW} ${GRAY}BLACK               ${NEON_PURPLE}│${RESET}"
+    echo -e "${NEON_PURPLE}│${GOLD}05${WHITE} ${ARROW} ${NEON_PINK}PINK                ${NEON_PURPLE}│${GOLD}10${WHITE} ${ARROW} ${WHITE}NO COLOR            ${NEON_PURPLE}│${RESET}"
+    echo -e "${NEON_PURPLE}└───────────────────────┴───────────────────────────────┘${RESET}"
+}
+
+# Main Menu Display
+show_main_menu() {
+    echo -e "${NEON_GREEN}${ARROW} ${WHITE}EASY BANNER ADDING METHOD${RESET}"
+    echo ""
+    echo -e "${ELECTRIC_BLUE}┌─────────────────────────────────────────────────────┐${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}1${WHITE} ${ARROW} ${NEON_GREEN}ADD BANNER                              ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}2${WHITE} ${ARROW} ${RED}REMOVE BANNER                           ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD}3${WHITE} ${ARROW} ${NEON_BLUE}COME BACK                               ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}└─────────────────────────────────────────────────────┘${RESET}"
+}
+
+# Premium Footer
+print_footer() {
+    echo ""
+    echo -e "${ELECTRIC_BLUE}╔═══════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${ELECTRIC_BLUE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL ${WHITE}© 2025 ${NEON_BLUE}  | ${INFO} @maptechgh ${HEART}${RESET}${ELECTRIC_BLUE}          ║${RESET}"
+    echo -e "${ELECTRIC_BLUE}╚═══════════════════════════════════════════════════════╝${RESET}"
+}
+
+# Initialize banner configuration
+initialize_banner() {
+    chk=$(cat /etc/ssh/sshd_config | grep Banner)
+    [[ $(netstat -nltp|grep 'dropbear' | wc -l) != '0' ]] && {
+        local="/etc/bannerssh"
+        [[ $(grep -wc $local /etc/default/dropbear) = '0' ]] && echo 'DROPBEAR_BANNER="/etc/bannerssh"' >>  /etc/default/dropbear
+    }
+    [[ "$(echo "$chk" | grep -v '#Banner' | grep Banner)" != "" ]] && {
+        local=$(echo "$chk" |grep -v "#Banner" | grep Banner | awk '{print $2}')
+    } || {
+        local="/etc/bannerssh"
+        [[ $(grep -wc $local /etc/ssh/sshd_config) = '0' ]] && echo "Banner /etc/bannerssh" >> /etc/ssh/sshd_config
+    }
+}
+
+# Banner creation function
+create_banner() {
+    get_input "WHICH MESSAGE DO YOU WANT TO DISPLAY" "${BANNER_ICON}" "${NEON_GREEN}"
+    msg1="$input"
+    
+    if [[ -z "$msg1" ]]; then
+        show_error "Empty or invalid field!"
+        sleep 2
+        return 1
+    fi
+    
+    show_font_menu
+    get_input "WHAT IS THE FONT SIZE" "${FONT_ICON}" "${NEON_BLUE}"
+    opc="$input"
+    
+    case "$opc" in
+        1|01) _size='6' ;;
+        2|02) _size='4' ;;
+        3|03) _size='3' ;;
+        4|04) _size='1' ;;
+        *) show_error "Invalid font size option!"; sleep 2; return 1 ;;
+    esac
+    
+    show_color_menu
+    get_input "WHAT'S THE COLOR" "${PALETTE}" "${NEON_PURPLE}"
+    ban_cor="$input"
+    
+    case "$ban_cor" in
+        1|01) echo "<h$_size><font color='blue'>$msg1" >> $local ;;
+        2|02) echo "<h$_size><font color='green'>$msg1" >> $local ;;
+        3|03) echo "<h$_size><font color='red'>$msg1" >> $local ;;
+        4|04) echo "<h$_size><font color='yellow'>$msg1" >> $local ;;
+        5|05) echo "<h$_size><font color='#F535AA'>$msg1" >> $local ;;
+        6|06) echo "<h$_size><font color='cyan'>$msg1" >> $local ;;
+        7|07) echo "<h$_size><font color='#FF7F00'>$msg1" >> $local ;;
+        8|08) echo "<h$_size><font color='#9932CD'>$msg1" >> $local ;;
+        9|09) echo "<h$_size><font color='black'>$msg1" >> $local ;;
+        10)
+            echo "<h$_size>$msg1</h$_size>" >> $local
+            /etc/init.d/ssh restart > /dev/null 2>&1
+            show_success "BANNER ADDED!"
+            sleep 2
+            return 0
+            ;;
+        *)
+            show_error "Invalid color option!"
+            sleep 2
+            return 1
+            ;;
+    esac
+    
+    echo "</font></h$_size>" >> $local
+    service ssh restart > /dev/null 2>&1 && service dropbear restart > /dev/null 2>&1
+    show_success "BANNER ADDED!"
+    unset ban_cor
+    sleep 2
+}
+
+# Banner removal function
+remove_banner() {
+    echo " " > $local
+    show_success "BANNER DELETED!"
+    service ssh restart > /dev/null 2>&1 && service dropbear restart > /dev/null 2>&1
+    sleep 2
+}
+
+# Main script execution
+banner() {
+    initialize_banner
+    
+    print_header
+    show_manual_instructions
+    show_main_menu
+    print_footer
+    
+    get_input "WHAT DO YOU WANT TO DO" "${GEAR}" "${NEON_GREEN}"
+    resp="$input"
+    
+    case "$resp" in
+        1)
+            create_banner
+            [[ $? -eq 0 ]] && menu || banner
+            ;;
+        2)
+            select_banner_template
+            [[ $? -eq 0 ]] && menu || banner
+            ;;
+        3)
+            remove_banner
+            menu
+            ;;
+        4)
+            menu
+            ;;
+        *)
+            show_error "Invalid option!"
+            sleep 2
+            banner
+            ;;
+    esac
+}
+
+# Start the banner manager
+banner
