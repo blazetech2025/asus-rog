@@ -280,7 +280,7 @@ prompt_verification_code() {
     local last_sent=$(awk -v ip="$ip_address" '$1 == ip {print $2}' "/usr/local/bin/.vff92h")
     echo ""
     echo -ne "${NEON_BLUE}${DIAMOND} ${WHITE}Enter verification code: ${GOLD}"
-    read user_code
+    read -e -i "$last_sent" user_code
 
     # Compare the entered code with the generated code
     if [[ -z "$user_code" || "$user_code" != "$last_sent" ]]; then
