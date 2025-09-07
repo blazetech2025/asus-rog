@@ -483,10 +483,10 @@ echo -e "${NEON_GREEN}║${BG_GREEN}${WHITE}                 ${CHECK_MARK} INSTA
 echo -e "${NEON_GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${ELECTRIC_BLUE}║${WHITE}                        ${GEAR} SYSTEM DETAILS ${GEAR}                       ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE}                        ${GEAR} SYSTEM DETAILS ${GEAR}                  ${ELECTRIC_BLUE}║${RESET}"
 echo -e "${ELECTRIC_BLUE}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} Command: ${GOLD}menu${WHITE} (to access control panel)           ${ELECTRIC_BLUE}║${RESET}"
-echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} IP Address: ${GOLD}$ip_address${WHITE}                        ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} Command: ${GOLD}menu${WHITE} (to access control panel)               ${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} IP Address: ${GOLD}$ip_address${WHITE}                              ${ELECTRIC_BLUE}║${RESET}"
 if [[ -n "$domain_name" ]]; then
     echo -e "${ELECTRIC_BLUE}║${WHITE} ${ARROW} Domain: ${GOLD}$domain_name${WHITE}                              ${ELECTRIC_BLUE}║${RESET}"
 else
@@ -495,7 +495,7 @@ fi
 echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 echo -e "${ELECTRIC_BLUE}╔════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${ELECTRIC_BLUE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL ${WHITE}© 2025 ${NEON_BLUE}| ${INFO} @maptechgh ${HEART}${RESET}${ELECTRIC_BLUE}║${RESET}"
+echo -e "${ELECTRIC_BLUE}║${BG_DARK}${CROWN}${GOLD} MAPTECH GLOBAL ${WHITE}© 2025 ${NEON_BLUE}| ${INFO} @maptechgh ${HEART}${RESET}${ELECTRIC_BLUE}          ║${RESET}"
 echo -e "${ELECTRIC_BLUE}╚════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 
@@ -503,7 +503,7 @@ rm $HOME/hehe && cat /dev/null > ~/.bash_history && history -c
 
 # Premium UDP Installation Option
 echo -e "${NEON_PURPLE}╔════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${NEON_PURPLE}║${BG_PURPLE}${WHITE}                   ${ROCKET} OPTIONAL COMPONENT ${ROCKET}                   ${RESET}${NEON_PURPLE}║${RESET}"
+echo -e "${NEON_PURPLE}║${BG_PURPLE}${WHITE}                   ${ROCKET} OPTIONAL COMPONENT ${ROCKET}                 ${RESET}${NEON_PURPLE}║${RESET}"
 echo -e "${NEON_PURPLE}╚════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 echo -ne "${WHITE}${ARROW} ${NEON_BLUE}Install UDP Custom Server? ${WHITE}[${GREEN}Y${WHITE}/${RED}N${WHITE}]: ${GOLD}"
