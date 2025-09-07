@@ -128,8 +128,8 @@ show_system_info() {
     _tuser=$(awk -F: '$3>=1000 {print $1}' /etc/passwd | grep -v nobody | wc -l)
 
     echo -e "${ELECTRIC_BLUE}┌─────────────────────┬──────────────────┬─────────────────┐${RESET}"
-    echo -e "${ELECTRIC_BLUE}│${WHITE} OS: $_system  ${ELECTRIC_BLUE}│${WHITE} RAM: $_ram ${ELECTRIC_BLUE}│${WHITE} CPU: $_core cores ${ELECTRIC_BLUE}│${RESET}"
-    echo -e "${ELECTRIC_BLUE}│${GOLD} uptime: ${_hora}    ${ELECTRIC_BLUE}│${GOLD} Used: $_usor   ${ELECTRIC_BLUE}│${GOLD} Load: $_usop ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${WHITE} OS: $_system  ${ELECTRIC_BLUE}│${WHITE} RAM: $_ram ${ELECTRIC_BLUE} │${WHITE} CPU: $_core cores    ${ELECTRIC_BLUE}│${RESET}"
+    echo -e "${ELECTRIC_BLUE}│${GOLD} uptime: ${_hora}    ${ELECTRIC_BLUE}│${GOLD} Used: $_usor   ${ELECTRIC_BLUE}│${GOLD} Load: $_usop      ${ELECTRIC_BLUE}│${RESET}"
     echo -e "${ELECTRIC_BLUE}└─────────────────────┴──────────────────┴─────────────────┘${RESET}"
     
     # Compact User Stats
